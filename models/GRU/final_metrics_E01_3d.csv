@@ -1,0 +1,4 @@
+exercise_class,modality,winner,split,n,MAE,RMSE,Pearson,CCC,best_k,best_params
+E01,3d,GBM,train,398,5.627636299328978,8.041617286055647,0.9243249084741137,0.911070181900894,9,"{'model__n_estimators': 100, 'model__min_samples_leaf': 12, 'model__max_depth': 3, 'model__learning_rate': 0.03}"
+E01,3d,GBM,val,82,9.916948537268162,12.41463371481061,0.781559590267641,0.7024650392398581,9,"{'model__n_estimators': 100, 'model__min_samples_leaf': 12, 'model__max_depth': 3, 'model__learning_rate': 0.03}"
+E01,3d,GBM,test,74,7.271923479154457,8.85749945482136,0.8591859525288602,0.8553285019013596,9,"{'model__n_estimators': 100, 'model__min_samples_leaf': 12, 'model__max_depth': 3, 'model__learning_rate': 0.03}"

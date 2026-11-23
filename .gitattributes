@@ -1,0 +1,6 @@
+* text=auto
+*.py text eol=lf
+*.mp4 binary
+*.pt binary
+*.bin binary
+*.joblib binary

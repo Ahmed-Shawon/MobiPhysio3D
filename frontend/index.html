@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{site}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" href="index.html" data-cfg="SITE_NAME"></a>
+    <nav class="nav" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="#exercises">Exercises</a>
+      <a href="#about">About the system</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="container hero">
+    <div class="hero__text">
+      <p class="eyebrow">AI rehabilitation assessment</p>
+      <h1>Upload an exercise video. Get a score and a skeleton view.</h1>
+      <p class="lead" data-cfg="DESCRIPTION_SHORT"></p>
+      <div class="button-row">
+        <a class="btn btn--primary" href="#exercises">Choose an exercise</a>
+        <a class="btn btn--secondary" href="#about">How it works</a>
+      </div>
+    </div>
+    <div id="hero-media"></div>
+  </section>
+
+  <section id="exercises" class="container section">
+    <div class="section__head">
+      <h2>Exercises</h2>
+      <p id="exercise-count" class="muted"></p>
+    </div>
+    <div id="exercise-grid" class="grid"></div>
+  </section>
+
+  <section id="about" class="band">
+    <div class="container section">
+      <h2>How the system works</h2>
+      <div class="steps-grid">
+        <div class="step">
+          <span class="step__num">1</span>
+          <h3>Choose an exercise</h3>
+          <p class="muted">Pick one of the supported exercise types.</p>
+        </div>
+        <div class="step">
+          <span class="step__num">2</span>
+          <h3>Upload a video</h3>
+          <p class="muted">The backend extracts body keypoints and runs the assessment model.</p>
+        </div>
+        <div class="step">
+          <span class="step__num">3</span>
+          <h3>Review the result</h3>
+          <p class="muted">Input video and skeleton side by side, with the assessment score.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="container site-footer">
+  <span data-cfg="FOOTER_LEFT"></span>
+  <span id="footer-contact"></span>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>

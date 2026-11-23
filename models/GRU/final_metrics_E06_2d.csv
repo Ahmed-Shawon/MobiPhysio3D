@@ -1,0 +1,4 @@
+exercise_class,modality,winner,split,n,MAE,RMSE,Pearson,CCC,best_k,best_params
+E06,2d,BaggedDT,train,248,3.796386153577552,5.015887208723105,0.811640190865871,0.61492114136738,16,"{'model__n_estimators': 50, 'model__max_samples': 0.6}"
+E06,2d,BaggedDT,val,41,5.743289699208763,7.342604218685256,-0.10261626801664041,-0.07691992467099751,16,"{'model__n_estimators': 50, 'model__max_samples': 0.6}"
+E06,2d,BaggedDT,test,65,7.938234584500236,10.123392429901267,0.4152256057936805,0.166760654037018,16,"{'model__n_estimators': 50, 'model__max_samples': 0.6}"

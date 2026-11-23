@@ -1,0 +1,4 @@
+exercise_class,modality,winner,split,n,MAE,RMSE,Pearson,CCC,best_k,best_params
+E07,3d,RandomForest,train,179,3.3046357810019686,4.1046971572627,0.96579250772306,0.9369600056456485,225,"{'model__n_estimators': 400, 'model__min_samples_split': 5, 'model__min_samples_leaf': 2, 'model__max_depth': 8}"
+E07,3d,RandomForest,val,36,13.080596673962296,15.142718396810512,-0.038532285192242305,-0.0264763211762843,225,"{'model__n_estimators': 400, 'model__min_samples_split': 5, 'model__min_samples_leaf': 2, 'model__max_depth': 8}"
+E07,3d,RandomForest,test,36,16.236325287851837,20.11623296458359,0.384977082050907,0.08412046494600348,225,"{'model__n_estimators': 400, 'model__min_samples_split': 5, 'model__min_samples_leaf': 2, 'model__max_depth': 8}"

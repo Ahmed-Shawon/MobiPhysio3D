@@ -1,0 +1,4 @@
+exercise_class,modality,winner,split,n,MAE,RMSE,Pearson,CCC,best_k,best_params
+E09,3d,CatBoost,train,257,2.856881502444488,3.449281148993511,0.9954799348267642,0.9950303636642638,252,"{'model__learning_rate': 0.03, 'model__l2_leaf_reg': 5, 'model__iterations': 600, 'model__depth': 6}"
+E09,3d,CatBoost,val,32,15.072786385953949,20.03981000399365,0.9022683601383381,0.851658494692854,252,"{'model__learning_rate': 0.03, 'model__l2_leaf_reg': 5, 'model__iterations': 600, 'model__depth': 6}"
+E09,3d,CatBoost,test,50,13.001686688731757,16.932177276718956,0.913267561270187,0.8811038295831386,252,"{'model__learning_rate': 0.03, 'model__l2_leaf_reg': 5, 'model__iterations': 600, 'model__depth': 6}"
