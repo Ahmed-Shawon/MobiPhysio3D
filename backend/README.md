@@ -64,7 +64,7 @@ All in `settings.py`; each can also be set as an environment variable
 | `DEVICE` | `auto` | `cpu` or `cuda` to force |
 | `MIN_VIDEO_SECONDS` / `MAX_VIDEO_SECONDS` | 1 / 60 | allowed video length |
 | `MIN_PERSON_FRACTION` | 0.5 | person must be visible in at least 50% of frames |
-| `MAX_GIF_FRAMES` | 150 | frames in the skeleton GIF (0 = whole video) |
+| `MAX_GIF_FRAMES` | 0 | frames in the skeleton GIF (0 = whole video) |
 | `QUEUE_MAX` | 3 | videos waiting behind the running one before "server busy" |
 | `JOB_TTL_HOURS` | 24 | results and GIFs are deleted after this |
 | `STRICT_CHECK` | 1 | 0 = start even if the startup check fails (not recommended) |
