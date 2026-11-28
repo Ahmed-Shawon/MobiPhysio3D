@@ -5,55 +5,66 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Exercise — {site}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="container site-header__inner">
-    <a class="brand" href="index.html" data-cfg="SITE_NAME"></a>
-    <nav class="nav" aria-label="Main">
-      <a href="index.html">Home</a>
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="logo" href="index.html" data-logo></a>
+    <nav class="nav__links" aria-label="Main">
       <a href="index.html#exercises">Exercises</a>
-      <a href="index.html#about">About the system</a>
+      <a href="index.html#how">How it works</a>
+      <a href="#contact">Contact</a>
     </nav>
+    <div class="nav__actions">
+      <a class="btn btn--secondary btn--sm" data-repo target="_blank" rel="noopener">GitHub</a>
+      <a class="btn btn--primary btn--sm" href="index.html#exercises">All exercises <span data-arrow></span></a>
+    </div>
+    <button class="burger" type="button" aria-label="Menu" aria-expanded="false" data-burger>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
   </div>
 </header>
 
 <!-- Shown when the ?id= in the address does not match an exercise in config.js -->
-<main id="not-found" class="container page" hidden>
-  <h1>Exercise not found</h1>
-  <p class="muted">This link does not match any supported exercise.</p>
-  <a class="btn btn--primary" href="index.html#exercises">See all exercises</a>
+<main id="not-found" class="wrap page" hidden>
+  <h1 class="page__title">Exercise not found</h1>
+  <p class="lead">This link does not match any supported exercise.</p>
+  <p style="margin-top:24px"><a class="btn btn--primary" href="index.html#exercises">See all exercises <span data-arrow></span></a></p>
 </main>
 
-<main id="page" class="container page">
-  <a class="back" href="index.html#exercises">← All exercises</a>
+<main id="page" class="wrap page">
+  <nav class="crumb" aria-label="Breadcrumb"><a href="index.html#exercises">Exercises</a><span>/</span><span id="crumb-name" class="crumb__here"></span></nav>
 
   <div class="page__head">
     <div>
-      <p id="exercise-index" class="eyebrow"></p>
-      <h1 id="exercise-name"></h1>
+      <div id="exercise-chips" class="chips"></div>
+      <h1 id="exercise-name" class="page__title"></h1>
+      <p id="exercise-index" class="status"></p>
     </div>
-    <button id="another" type="button" class="btn btn--secondary" hidden>Upload another video</button>
+    <div class="page__actions">
+      <a id="download-skeleton" class="btn btn--secondary" href="#" download="skeleton.gif" target="_blank" rel="noopener" hidden>Download skeleton GIF</a>
+      <button id="another" type="button" class="btn btn--primary" hidden>Upload another video <span data-arrow></span></button>
+    </div>
   </div>
 
   <!-- ============ VIEW 1: UPLOAD ============ -->
-  <div id="upload-view" class="two-col">
-    <section class="panel two-col__side">
-      <h2>Reference demo</h2>
+  <div id="upload-view" class="upload">
+    <section class="panel">
+      <h2 class="panel__title">Reference demo</h2>
       <div id="demo-slot"></div>
       <p id="exercise-description" class="muted"></p>
-      <h3>Recording tips</h3>
+      <h3 class="panel__sub">Recording tips</h3>
       <ul id="tips" class="tips"></ul>
     </section>
 
-    <section class="panel two-col__main">
-      <h2>Upload video</h2>
+    <section class="panel">
+      <h2 class="panel__title">Upload video</h2>
 
       <label id="dropzone" class="dropzone" for="video-file">
-        <svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg>
+        <span class="dropzone__ic"><svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"></path><path d="M7 9l5-5 5 5"></path><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"></path></svg></span>
         <span class="dropzone__title">Drag and drop a video here</span>
         <span class="muted">or click to browse</span>
         <span id="upload-rules" class="dropzone__rules"></span>
@@ -87,43 +98,39 @@
   </div>
 
   <!-- ============ VIEW 2: RESULTS ============ -->
-  <div id="results-view" class="results" hidden>
-    <section class="output" aria-label="Output">
-      <div class="panel panel--tight">
-        <h2>Input video</h2>
-        <div class="media media--dark"><video id="input-video" controls playsinline></video></div>
+  <div id="results-view" hidden>
+    <section class="videos" aria-label="Output">
+      <div class="vpanel">
+        <div class="vpanel__head"><h2>Your video</h2><span class="chip chip--light nodot">INPUT</span></div>
+        <div class="media media--dark vbox"><video id="input-video" controls playsinline></video></div>
       </div>
-      <div class="panel panel--tight">
-        <div class="panel__head">
-          <h2>Skeleton output</h2>
-          <a id="download-skeleton" href="#" download="skeleton.gif" target="_blank" rel="noopener">Download GIF</a>
-        </div>
-        <div id="skeleton-slot" class="media media--dark"></div>
+      <div class="vpanel">
+        <div class="vpanel__head"><h2>Skeleton output</h2><span id="skeleton-chip" class="chip chip--light">SKELETON</span></div>
+        <div id="skeleton-slot" class="media media--dark vbox"></div>
       </div>
     </section>
 
-    <section class="scores" aria-label="Scores">
-      <div class="score-card">
-        <h2>Assessment score</h2>
-        <p id="score-value" class="score-card__value"></p>
-        <p id="score-max" hidden></p>
-        <div id="score-track" class="score-card__track" hidden><div id="score-fill" class="score-card__fill"></div></div>
-        <p id="score-label" class="score-card__label" hidden></p>
-      </div>
-      <div class="panel scores__details">
-        <h2>Details</h2>
-        <div class="table-wrap">
-          <table class="details"><tbody id="details-body"></tbody></table>
+    <section id="result-card" class="result" aria-label="Assessment result">
+      <div class="result__score">
+        <p class="result__label">ASSESSMENT RESULT</p>
+        <div class="gauge">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <defs><linearGradient id="gauge-grad" x1="0" x2="1"><stop offset="0" stop-color="#14B8A6"/><stop offset="1" stop-color="#A5B4FC"/></linearGradient></defs>
+            <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="12" stroke-linecap="round" stroke-dasharray="377 1000" transform="rotate(135 100 100)"/>
+            <circle id="gauge-arc" class="gauge__arc" cx="100" cy="100" r="80" fill="none" stroke="url(#gauge-grad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="0 1000" transform="rotate(135 100 100)"/>
+          </svg>
+          <div class="gauge__val"><b id="score-value">—</b><span id="score-max">points out of 100</span></div>
         </div>
+      </div>
+      <div class="result__details">
+        <h3>Details</h3>
+        <dl id="details-list"></dl>
       </div>
     </section>
   </div>
 </main>
 
-<footer class="container site-footer">
-  <span data-cfg="FOOTER_LEFT"></span>
-  <span id="footer-contact"></span>
-</footer>
+<footer id="contact" class="foot" data-footer></footer>
 
 <script src="js/config.js"></script>
 <script src="js/common.js"></script>

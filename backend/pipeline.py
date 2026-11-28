@@ -162,24 +162,11 @@ class Engine:
         return h36m_2d, pred_3d
 
     def render_gif(self, pred_3d, gif_path: Path):
-        import matplotlib
-        matplotlib.use("Agg")
-        import matplotlib.pyplot as plt
-        from matplotlib.animation import FuncAnimation
-
-        n = pred_3d.shape[0]
-        if settings.MAX_GIF_FRAMES:
-            n = min(n, settings.MAX_GIF_FRAMES)
-        fig = plt.figure(figsize=(6, 6))
-        ax = fig.add_subplot(111, projection="3d")
-
-        def update(i):
-            self.bps.plot_skeleton(ax, pred_3d[i], self.skeleton_parents)
-            ax.set_title(f"frame {i}")
-
-        anim = FuncAnimation(fig, update, frames=n, interval=1000 / settings.GIF_FPS)
-        anim.save(str(gif_path), writer="pillow", fps=settings.GIF_FPS)
-        plt.close(fig)
+        # Same picture as batch_process_subject.plot_skeleton, drawn faster
+        # (plot built once + frames drawn on several CPU cores). See skeleton_gif.py.
+        import skeleton_gif
+        skeleton_gif.render(pred_3d, self.skeleton_parents, gif_path, fps=settings.GIF_FPS,
+                            max_frames=settings.MAX_GIF_FRAMES, workers=settings.GIF_WORKERS)
 
     # -------------------------------------------------------------- stage 4: score
     def encode(self, code, csv_2d: Path, csv_3d: Path):

@@ -17,6 +17,12 @@
   const indexLabel = "Exercise " + (index + 1) + " of " + cfg.EXERCISES.length;
   $("exercise-index").textContent = indexLabel;
   $("exercise-name").textContent = exercise.name;
+  $("crumb-name").textContent = exercise.name;
+  if (exercise.area) $("exercise-chips").appendChild(el("span", "chip chip--light", exercise.area));
+  if (exercise.pose) {
+    $("exercise-chips").appendChild(el("span", "chip chip--light nodot", exercise.pose + " pose"));
+    $("skeleton-chip").textContent = exercise.pose + " SKELETON";
+  }
   $("exercise-description").textContent = exercise.description;
   const demo = mediaWithFallback(exercise.demo, "Demo GIF of the correct movement", "Demo of " + exercise.name);
   demo.classList.add("demo__media");
@@ -26,7 +32,8 @@
   const input = $("video-file");
   input.accept = cfg.UPLOAD.ACCEPT;
   const sizeRule = Number.isFinite(cfg.UPLOAD.MAX_SIZE_MB) ? " · max " + cfg.UPLOAD.MAX_SIZE_MB + " MB" : "";
-  $("upload-rules").textContent = "Video file" + sizeRule;
+  const formats = String(cfg.UPLOAD.ACCEPT || "").split(",").map((f) => f.trim().replace(/^\./, "").toUpperCase()).filter(Boolean).join(", ");
+  $("upload-rules").textContent = (formats || "Video file") + " · 10–60 s" + sizeRule;
 
   /* ---------- File selection ---------- */
   let file = null;
@@ -158,43 +165,77 @@
     $("download-skeleton").hidden = !src;
     if (src) $("download-skeleton").href = src;
 
-    // Score
+    // Score + gauge (arc draws from 0 and the number counts up when the card comes into view)
     const score = Number(result.score);
     const hasScore = result.score != null && !Number.isNaN(score);
-    $("score-value").textContent = hasScore ? String(+score.toFixed(cfg.SCORE_DECIMALS)) : "—";
-    const hasMax = hasScore && typeof cfg.SCORE_MAX === "number" && cfg.SCORE_MAX > 0;
-    $("score-max").hidden = !hasMax;
-    $("score-track").hidden = !hasMax;
-    if (hasMax) {
-      $("score-max").textContent = "out of " + cfg.SCORE_MAX;
-      $("score-fill").style.width = Math.max(0, Math.min(100, (score / cfg.SCORE_MAX) * 100)) + "%";
-    }
-    const band = hasScore ? [...(cfg.RATING_BANDS || [])].sort((a, b) => b.min - a.min).find((b) => score >= b.min) : null;
-    $("score-label").hidden = !band;
-    $("score-label").textContent = band ? band.label : "";
+    const max = typeof cfg.SCORE_MAX === "number" && cfg.SCORE_MAX > 0 ? cfg.SCORE_MAX : null;
+    const shown = hasScore ? String(+score.toFixed(cfg.SCORE_DECIMALS)) : "—";
+    $("score-max").textContent = max ? "points out of " + max : "points";
+    pendingGauge = { score: hasScore ? score : null, max };
+    $("score-value").textContent = hasScore ? (0).toFixed(cfg.SCORE_DECIMALS) : "—";
+    $("gauge-arc").style.strokeDasharray = "0 1000";
 
-    // Details table: fixed rows + every key the backend sends in "details"
-    const rows = [["Exercise", exercise.name], ["Video file", file.name + " · " + formatSize(file.size)], ["Processing time", seconds.toFixed(1) + " s"]];
+    // Details: points first, then fixed rows, then every key the backend sends in "details"
+    const rows = [["Points", shown, max ? "/ " + max : ""], ["Exercise", exercise.name]];
+    if (exercise.pose) rows.push(["Pose", exercise.pose]);
+    rows.push(["Video file", file.name, formatSize(file.size)], ["Processing time", seconds.toFixed(1) + " s"]);
     const hidden = (cfg.HIDDEN_DETAILS || []).map((h) => h.toLowerCase());
     Object.entries(result.details).forEach(([k, v]) => {
       if (hidden.includes(k.replace(/_/g, " ").toLowerCase())) return;
       const label = k.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
       rows.push([label, typeof v === "object" ? JSON.stringify(v) : String(v)]);
     });
-    const tbody = $("details-body");
-    tbody.textContent = "";
-    rows.forEach(([k, v]) => {
-      const tr = el("tr");
-      const th = el("th", null, k); th.scope = "row";
-      tr.append(th, el("td", null, v));
-      tbody.appendChild(tr);
+    const dl = $("details-list");
+    dl.textContent = "";
+    rows.forEach(([k, v, small], i) => {
+      const row = el("div", i === 0 ? "is-points" : (String(v).length > 22 ? "is-wide" : ""));
+      const dd = el("dd", null, v);
+      if (small) dd.appendChild(el("small", null, small));
+      row.append(el("dt", null, k), dd);
+      dl.appendChild(row);
     });
 
-    $("exercise-index").textContent = "Assessment result";
+    $("exercise-index").textContent = "Analysis complete in " + seconds.toFixed(1) + " s";
+    $("exercise-index").classList.add("status--done");
     $("upload-view").hidden = true;
     $("results-view").hidden = false;
     $("another").hidden = false;
     window.scrollTo({ top: 0, behavior: "smooth" });
+    watchGauge();
+  }
+
+  /* ---------- Gauge animation ---------- */
+  let pendingGauge = null;
+  const ARC = 377; // length of the 270° track (r = 80)
+  function runGauge() {
+    if (!pendingGauge) return;
+    const { score, max } = pendingGauge;
+    pendingGauge = null;
+    if (score == null) return;
+    const frac = Math.max(0, Math.min(1, score / (max || 100)));
+    const arc = $("gauge-arc"), value = $("score-value");
+    if (window.reducedMotion) {
+      arc.style.strokeDasharray = (ARC * frac).toFixed(1) + " 1000";
+      value.textContent = score.toFixed(cfg.SCORE_DECIMALS);
+      return;
+    }
+    requestAnimationFrame(() => requestAnimationFrame(() => { arc.style.strokeDasharray = (ARC * frac).toFixed(1) + " 1000"; }));
+    const t0 = performance.now(), dur = 1400;
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      value.textContent = (score * e).toFixed(cfg.SCORE_DECIMALS);
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  let gaugeObserver = null;
+  function watchGauge() {
+    if (gaugeObserver) gaugeObserver.disconnect();
+    if (!("IntersectionObserver" in window)) { runGauge(); return; }
+    gaugeObserver = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { runGauge(); gaugeObserver.disconnect(); }
+    }), { threshold: 0.35 });
+    gaugeObserver.observe($("result-card"));
   }
 
   $("another").addEventListener("click", () => {
@@ -203,6 +244,9 @@
     $("another").hidden = true;
     $("upload-view").hidden = false;
     $("exercise-index").textContent = indexLabel;
+    $("exercise-index").classList.remove("status--done");
+    $("download-skeleton").hidden = true;
+    pendingGauge = null;
     setFile(null);
   });
 })();

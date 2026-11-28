@@ -75,8 +75,10 @@ MIN_PERSON_FRACTION = float(_env("MIN_PERSON_FRACTION", 0.5))  # person must be 
 # Several people: not an error. The largest person in each frame is scored.
 
 # ---------------------------------------------------------------- outputs
-MAX_GIF_FRAMES = int(_env("MAX_GIF_FRAMES", 150))   # 0 = whole video
+MAX_GIF_FRAMES = int(_env("MAX_GIF_FRAMES", 0))   # 0 = whole video
 GIF_FPS = int(_env("GIF_FPS", 25))
+# CPU processes that draw the skeleton GIF at the same time. 0 = automatic (cores - 1, at most 6)
+GIF_WORKERS = int(_env("GIF_WORKERS", 0))
 
 # ---------------------------------------------------------------- startup check
 SEED = 42

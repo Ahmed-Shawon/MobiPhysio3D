@@ -7,8 +7,10 @@ window.APP_CONFIG = {
   SITE_NAME: "MobiPhysio",
   DESCRIPTION_SHORT: "MobiPhysio scores physiotherapy exercises from an ordinary single-camera video. It detects 2D body keypoints with YOLO26, lifts them to 3D with KTPFormer, and turns the motion into LSTM/GRU features that a trained regressor converts into an assessment score for nine exercises. The project compares how well 2D and 3D pose estimation perform for this kind of evaluation.",
   FOOTER_LEFT: "A Comparative Performance Analysis of 2D and 3D Pose Estimation for Monocular Camera-Based Physiotherapy Exercise Evaluation",
-  // Footer contact block (right side): name, email (mailto link) and repository link
+  // Footer contact block (right side): name, university, email (mailto link) and repository link
+  HERO_SUBHEADING: "Upload an exercise video. MobiPhysio returns an assessment score.",
   CONTACT_NAME: "Hassan Ahmed Shawon",
+  CONTACT_AFFILIATION: "East West University", // shown under the name in the footer
   CONTACT_EMAIL: "hassan.a.shawon@gmail.com",
   REPOSITORY_URL: "https://github.com/Ahmed-Shawon/MobiPhysio3D",
   HERO_MEDIA: "assets/demos/hero.mp4", // shown in the hero; a placeholder box appears if the file is missing
@@ -74,17 +76,19 @@ window.APP_CONFIG = {
   /* ---------- The 9 exercises ----------
      id          → sent to the backend as exercise_id (keep it stable, no spaces)
      demo        → GIF/image or MP4/WebM video in assets/demos/ (placeholder shown if missing)
-     tips        → recording tips listed on the upload page                    */
+     tips        → recording tips listed on the upload page
+     area        → body area; used for the filter pills and the card label
+     pose        → "2D" or "3D": the pose model used for this exercise           */
   EXERCISES: [
-    { id: "E01", name: "Abduction", description: "Moving the limb away from the midline of the body.", demo: "assets/demos/E01_Abduction.mp4", tips: [] },
-    { id: "E02", name: "Adduction", description: "Moving the limb back toward the midline of the body.", demo: "assets/demos/E02_Adduction.mp4", tips: [] },
-    { id: "E03", name: "Lateral Rotation", description: "Rotating the limb outward, away from the midline.", demo: "assets/demos/E03_Lateral_Rotation.mp4", tips: [] },
-    { id: "E04", name: "Medial Rotation", description: "Rotating the limb inward, toward the midline.", demo: "assets/demos/E04_Medial_Rotation.mp4", tips: [] },
-    { id: "E05", name: "Circumduction", description: "Moving the limb in a circular, cone-shaped path.", demo: "assets/demos/E05_Circumduction.mp4", tips: [] },
-    { id: "E06", name: "Wrist Extension", description: "Bending the wrist backward so the back of the hand moves toward the forearm.", demo: "assets/demos/E06_Wrist_Extension.mp4", tips: [] },
-    { id: "E07", name: "Hip Joint Flexion", description: "Raising the thigh forward toward the torso.", demo: "assets/demos/E07_Hip_Joint_Flexion.mp4", tips: [] },
-    { id: "E08", name: "Lumbar Flexion", description: "Bending the lower back forward.", demo: "assets/demos/E08_Lumbar_Flexion.mp4", tips: [] },
-    { id: "E09", name: "Back Extension", description: "Arching the back backward from an upright position.", demo: "assets/demos/E09_Back_Extension.mp4", tips: [] }
+    { id: "E01", name: "Abduction", area: "Shoulder", pose: "3D", description: "Moving the limb away from the midline of the body.", demo: "assets/demos/E01_Abduction.mp4", tips: [] },
+    { id: "E02", name: "Adduction", area: "Shoulder", pose: "3D", description: "Moving the limb back toward the midline of the body.", demo: "assets/demos/E02_Adduction.mp4", tips: [] },
+    { id: "E03", name: "Lateral Rotation", area: "Shoulder", pose: "3D", description: "Rotating the limb outward, away from the midline.", demo: "assets/demos/E03_LateralRotation.mp4", tips: [] },
+    { id: "E04", name: "Medial Rotation", area: "Shoulder", pose: "3D", description: "Rotating the limb inward, toward the midline.", demo: "assets/demos/E03_LateralRotation.mp4", tips: [] },
+    { id: "E05", name: "Circumduction", area: "Shoulder", pose: "3D", description: "Moving the limb in a circular, cone-shaped path.", demo: "assets/demos/E05_Circumduction.mp4", tips: [] },
+    { id: "E06", name: "Wrist Extension", area: "Wrist", pose: "2D", description: "Bending the wrist backward so the back of the hand moves toward the forearm.", demo: "assets/demos/E06_WristExtension.mp4", tips: [] },
+    { id: "E07", name: "Hip Joint Flexion", area: "Hip", pose: "3D", description: "Raising the thigh forward toward the torso.", demo: "assets/demos/E07_HipJointFlexion.mp4", tips: [] },
+    { id: "E08", name: "Lumbar Flexion", area: "Spine", pose: "3D", description: "Bending the lower back forward.", demo: "assets/demos/E07_HipJointFlexion.mp4", tips: [] },
+    { id: "E09", name: "Back Extension", area: "Spine", pose: "3D", description: "Arching the back backward from an upright position.", demo: "assets/demos/E09_BackExtension.mp4", tips: [] }
   ],
   // Tips shown for every exercise, before the exercise's own tips
   COMMON_TIPS: ["Full body visible in frame", "Single person, steady camera"]
