@@ -11,6 +11,9 @@ backend/uploads/
 backend/outputs/
 backend/logs/
 backend/catboost_info/
+# Accounts database, saved assessments and the generated secret key
+backend/data/
+*.db
 # Rebuilt automatically from models/ on first start
 backend/models_cache/
 *.log

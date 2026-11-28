@@ -45,7 +45,8 @@
       <p id="exercise-index" class="status"></p>
     </div>
     <div class="page__actions">
-      <a id="download-skeleton" class="btn btn--secondary" href="#" download="skeleton.gif" target="_blank" rel="noopener" hidden>Download skeleton GIF</a>
+      <a id="download-skeleton" class="btn btn--secondary" href="#" download="skeleton.gif" hidden>Download GIF</a>
+      <a id="download-report" class="btn btn--secondary" href="#" download hidden><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download report (PDF)</a>
       <button id="another" type="button" class="btn btn--primary" hidden>Upload another video <span data-arrow></span></button>
     </div>
   </div>
@@ -102,7 +103,8 @@
     <section class="videos" aria-label="Output">
       <div class="vpanel">
         <div class="vpanel__head"><h2>Your video</h2><span class="chip chip--light nodot">INPUT</span></div>
-        <div class="media media--dark vbox"><video id="input-video" controls playsinline></video></div>
+        <div id="input-box" class="media media--dark vbox"><video id="input-video" controls playsinline></video></div>
+        <div id="input-frames" class="frames" hidden></div>
       </div>
       <div class="vpanel">
         <div class="vpanel__head"><h2>Skeleton output</h2><span id="skeleton-chip" class="chip chip--light">SKELETON</span></div>
@@ -127,6 +129,13 @@
         <dl id="details-list"></dl>
       </div>
     </section>
+
+    <!-- Guests: invitation to sign up. Logged-in users: "saved" confirmation -->
+    <section id="save-note" class="save-note" hidden>
+      <span class="save-note__ic" aria-hidden="true"></span>
+      <div class="save-note__text"><b id="save-title"></b><span id="save-text"></span></div>
+      <div id="save-actions" class="save-note__actions"></div>
+    </section>
   </div>
 </main>
 
@@ -134,6 +143,7 @@
 
 <script src="js/config.js"></script>
 <script src="js/common.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/api.js"></script>
 <script src="js/exercise.js"></script>
 </body>

@@ -131,7 +131,16 @@
     const started = performance.now();
     try {
       const result = await API.analyze(exercise.id, file, setStage);
-      showResults(result, (performance.now() - started) / 1000);
+      const seconds = (performance.now() - started) / 1000;
+      showResults({
+        ...result,
+        inputUrl,
+        videoName: file.name,
+        videoSize: formatSize(file.size),
+        seconds,
+        created: new Date(),
+        reportUrl: result.jobId ? API.url("/api/report/" + encodeURIComponent(result.jobId) + ".pdf") : null
+      });
     } catch (err) {
       showError(err.message || "Something went wrong. Try again.");
     } finally {
@@ -140,9 +149,34 @@
   });
 
   /* ---------- Results ---------- */
-  function showResults(result, seconds) {
-    // Input video (played straight from the browser, no re-download)
-    attachVideo($("input-video"), inputUrl);
+  const fileStamp = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" +
+    String(d.getDate()).padStart(2, "0") + "_" + String(d.getHours()).padStart(2, "0") + String(d.getMinutes()).padStart(2, "0");
+  const dateText = (d) => d.toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  // result: { score, skeletonSrc, details, inputUrl?, frames?, videoName, videoSize?, seconds?, created,
+  //           reportUrl, jobId?, assessmentId?, reopened? }
+  let current = null;
+  function showResults(result) {
+    current = result;
+    const seconds = result.seconds;
+
+    // Input: the local video (new analysis), or key frames of it (a saved assessment; videos are not kept)
+    const frames = $("input-frames");
+    frames.textContent = "";
+    frames.hidden = !result.reopened;
+    $("input-box").hidden = !!result.reopened;
+    if (result.reopened) {
+      (result.frames || []).forEach((src, i) => {
+        const img = el("img");
+        img.src = src; img.alt = "Frame " + (i + 1) + " of your video"; img.loading = "lazy";
+        frames.appendChild(img);
+      });
+      frames.appendChild(el("p", "frames__note", result.frames && result.frames.length
+        ? "Key frames from your video. The video itself is not stored."
+        : "The video itself is not stored."));
+    } else {
+      attachVideo($("input-video"), result.inputUrl);
+    }
 
     // Skeleton output: GIF/image, or video if the backend returns one
     const slot = $("skeleton-slot");
@@ -162,8 +196,11 @@
       img.onerror = () => { slot.textContent = "The skeleton output could not be loaded"; slot.classList.add("media--empty"); };
       slot.appendChild(img);
     }
+    const stamp = exercise.name.replace(/\s+/g, "_") + "_" + fileStamp(result.created);
     $("download-skeleton").hidden = !src;
-    if (src) $("download-skeleton").href = src;
+    if (src) { $("download-skeleton").href = src; $("download-skeleton").download = "MobiPhysio_" + stamp + ".gif"; }
+    $("download-report").hidden = !result.reportUrl;
+    if (result.reportUrl) $("download-report").href = result.reportUrl;
 
     // Score + gauge (arc draws from 0 and the number counts up when the card comes into view)
     const score = Number(result.score);
@@ -178,7 +215,9 @@
     // Details: points first, then fixed rows, then every key the backend sends in "details"
     const rows = [["Points", shown, max ? "/ " + max : ""], ["Exercise", exercise.name]];
     if (exercise.pose) rows.push(["Pose", exercise.pose]);
-    rows.push(["Video file", file.name, formatSize(file.size)], ["Processing time", seconds.toFixed(1) + " s"]);
+    if (result.videoName) rows.push(["Video file", result.videoName, result.videoSize || ""]);
+    if (result.reopened) rows.push(["Date", dateText(result.created)]);
+    else rows.push(["Processing time", seconds.toFixed(1) + " s"]);
     const hidden = (cfg.HIDDEN_DETAILS || []).map((h) => h.toLowerCase());
     Object.entries(result.details).forEach(([k, v]) => {
       if (hidden.includes(k.replace(/_/g, " ").toLowerCase())) return;
@@ -195,13 +234,97 @@
       dl.appendChild(row);
     });
 
-    $("exercise-index").textContent = "Analysis complete in " + seconds.toFixed(1) + " s";
+    $("exercise-index").textContent = result.reopened
+      ? "Saved assessment · " + dateText(result.created)
+      : "Analysis complete in " + seconds.toFixed(1) + " s";
     $("exercise-index").classList.add("status--done");
     $("upload-view").hidden = true;
     $("results-view").hidden = false;
     $("another").hidden = false;
+    renderSaveNote();
     window.scrollTo({ top: 0, behavior: "smooth" });
     watchGauge();
+  }
+
+  /* ---------- "Sign up to save" / "Saved to your account" ---------- */
+  const CHECK_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const SAVE_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 3v5h6"/><path d="M9 21v-7h7v7"/></svg>';
+
+  function renderSaveNote() {
+    const note = $("save-note"), actions = $("save-actions");
+    actions.textContent = "";
+    note.hidden = !current || cfg.USE_MOCK;
+    if (note.hidden) return;
+    const link = (text, href, primary) => {
+      const a = el("a", "btn btn--sm " + (primary ? "btn--primary" : "btn--secondary"), text);
+      a.href = href; return a;
+    };
+    if (current.assessmentId) {
+      note.classList.add("save-note--saved");
+      note.querySelector(".save-note__ic").innerHTML = CHECK_SVG;
+      $("save-title").textContent = current.reopened ? "Saved in your account" : "Saved to your account";
+      $("save-text").textContent = "Find it with your score history under My assessments.";
+      actions.appendChild(link("My assessments", "account.html", false));
+      return;
+    }
+    note.classList.remove("save-note--saved");
+    note.querySelector(".save-note__ic").innerHTML = SAVE_SVG;
+    const save = () => claim().catch((e) => { $("save-text").textContent = e.message; });
+    if (window.AUTH && AUTH.user) {
+      // logged in, but this analysis ran as a guest (e.g. logged in afterwards)
+      $("save-title").textContent = "This result is not saved yet";
+      $("save-text").textContent = "Save it to your account to keep it with your score history.";
+      const b = el("button", "btn btn--primary btn--sm", "Save to my account");
+      b.type = "button"; b.addEventListener("click", save);
+      actions.appendChild(b);
+    } else {
+      $("save-title").textContent = "Sign up to save your results";
+      $("save-text").textContent = "Keep this score, track your progress over time and download your history.";
+      const b = el("button", "btn btn--primary btn--sm", "Sign up");
+      b.type = "button";
+      b.addEventListener("click", () => AUTH.open("signup", { lead: "Create a free account and this result is saved to it.", then: save }));
+      const l = el("button", "btn btn--secondary btn--sm", "Log in");
+      l.type = "button";
+      l.addEventListener("click", () => AUTH.open("login", { then: save }));
+      actions.append(l, b);
+    }
+  }
+
+  async function claim() {
+    if (!current || !current.jobId || current.assessmentId) { renderSaveNote(); return; }
+    const r = await AUTH.request("POST", "/api/assessments/claim/" + encodeURIComponent(current.jobId));
+    current.assessmentId = r.assessment_id;
+    renderSaveNote();
+  }
+  if (window.AUTH) AUTH.onChange(() => { if (current) renderSaveNote(); });
+
+  /* ---------- Reopen a saved assessment: exercise.html?id=E01&saved=12 ---------- */
+  const savedId = new URLSearchParams(location.search).get("saved");
+  if (savedId && window.AUTH) {
+    $("upload-view").hidden = true;
+    $("exercise-index").textContent = "Loading saved assessment…";
+    AUTH.ready.then(async (user) => {
+      if (!user) throw new Error("Log in to open your saved assessments.");
+      const a = await AUTH.request("GET", "/api/assessments/" + encodeURIComponent(savedId));
+      if (a.exercise_id !== exercise.id) { location.replace("exercise.html?id=" + encodeURIComponent(a.exercise_id) + "&saved=" + a.id); return; }
+      showResults({
+        score: a.score,
+        skeletonSrc: API.url(a.skeleton_url),
+        details: a.details || {},
+        frames: (a.keyframes || []).map(API.url),
+        videoName: a.video_name,
+        created: new Date(a.created * 1000),
+        reportUrl: API.url(a.report_url),
+        assessmentId: a.id,
+        reopened: true
+      });
+      $("another").innerHTML = "New assessment " + ARROW_SVG;
+    }).catch((e) => {
+      $("upload-view").hidden = false;
+      $("exercise-index").textContent = indexLabel;
+      showError(e.message || "This assessment could not be opened.");
+      if (!AUTH.user) AUTH.open("login", { then: () => location.reload() });
+    });
   }
 
   /* ---------- Gauge animation ---------- */
@@ -246,7 +369,11 @@
     $("exercise-index").textContent = indexLabel;
     $("exercise-index").classList.remove("status--done");
     $("download-skeleton").hidden = true;
+    $("download-report").hidden = true;
+    $("save-note").hidden = true;
+    current = null;
     pendingGauge = null;
     setFile(null);
+    if (savedId) history.replaceState(null, "", "exercise.html?id=" + encodeURIComponent(exercise.id));
   });
 })();

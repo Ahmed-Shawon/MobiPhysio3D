@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My assessments — {site}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav__inner">
+    <a class="logo" href="index.html" data-logo></a>
+    <nav class="nav__links" aria-label="Main">
+      <a href="index.html#exercises">Exercises</a>
+      <a href="index.html#how">How it works</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav__actions">
+      <a class="btn btn--secondary btn--sm" data-repo target="_blank" rel="noopener">GitHub</a>
+      <a class="btn btn--primary btn--sm" href="index.html#exercises">New assessment <span data-arrow></span></a>
+    </div>
+    <button class="burger" type="button" aria-label="Menu" aria-expanded="false" data-burger>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="wrap page">
+  <nav class="crumb" aria-label="Breadcrumb"><a href="index.html">Home</a><span>/</span><span class="crumb__here">My assessments</span></nav>
+
+  <div class="page__head">
+    <div>
+      <p class="eyebrow">Account</p>
+      <h1 class="page__title">My assessments</h1>
+      <p id="who" class="status"></p>
+    </div>
+    <div class="page__actions">
+      <a id="export-csv" class="btn btn--secondary" href="#" download hidden><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export history (CSV)</a>
+      <a class="btn btn--primary" href="index.html#exercises">New assessment <span data-arrow></span></a>
+    </div>
+  </div>
+
+  <!-- not logged in -->
+  <section id="logged-out" class="panel empty" hidden>
+    <h2 class="panel__title">Log in to see your assessments</h2>
+    <p class="muted">Your saved results, score history and downloads are here once you log in.</p>
+    <div class="empty__actions">
+      <button id="login-btn" type="button" class="btn btn--secondary">Log in</button>
+      <button id="signup-btn" type="button" class="btn btn--primary">Create an account</button>
+    </div>
+  </section>
+
+  <p id="error" class="error" role="alert" hidden></p>
+
+  <div id="content" hidden>
+    <section class="stats" aria-label="Summary">
+      <div class="stat"><span>Assessments</span><b id="stat-count">0</b></div>
+      <div class="stat"><span>Exercises tried</span><b id="stat-exercises">0</b></div>
+      <div class="stat"><span>Last assessment</span><b id="stat-last">—</b></div>
+    </section>
+
+    <!-- no results yet -->
+    <section id="empty" class="panel empty" hidden>
+      <h2 class="panel__title">No saved assessments yet</h2>
+      <p class="muted">Run an assessment while logged in and it is saved here automatically.</p>
+      <div class="empty__actions"><a class="btn btn--primary" href="index.html#exercises">Choose an exercise <span data-arrow></span></a></div>
+    </section>
+
+    <section id="chart-panel" class="panel chart-panel">
+      <div class="chart-panel__head">
+        <div>
+          <h2 class="panel__title">Score over time</h2>
+          <p id="chart-sub" class="muted"></p>
+        </div>
+        <div id="chart-filters" class="filters" role="group" aria-label="Exercise"></div>
+      </div>
+      <div id="chart" class="chart"></div>
+    </section>
+
+    <section id="list-panel" class="panel">
+      <h2 class="panel__title">All results</h2>
+      <div class="table-wrap">
+        <table class="history">
+          <thead><tr><th>Date</th><th>Exercise</th><th class="num">Score</th><th>Model</th><th class="actions-col"><span class="sr">Actions</span></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer id="contact" class="foot" data-footer></footer>
+
+<script src="js/config.js"></script>
+<script src="js/common.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script src="js/account.js"></script>
+</body>
+</html>

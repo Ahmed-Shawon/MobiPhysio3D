@@ -95,6 +95,20 @@ features and checked against the reported test metrics. The terminal shows
 `Models checked: all 9 OK`. Later starts take seconds.
 `http://localhost:8000/api/health` shows whether the GPU is used.
 
+## Accounts and reports
+
+- **Guests** can run assessments without an account. Each result can be downloaded as a
+  **PDF report** (exercise, date, score and what it means, the model used, and key frames of
+  the video next to the skeleton) and as the **skeleton GIF**.
+- **Sign up / log in** (name, email, password) from the navbar. Logged-in users' assessments
+  are saved automatically; a guest result can be saved right after signing up.
+- **My assessments** (`account.html`): all saved results, score over time per exercise,
+  reopen a result, PDF/GIF downloads and a CSV export of the history.
+- Data lives in `backend/data/` (SQLite database, saved GIFs and key frames). It is not
+  committed. Uploaded videos are never kept. Passwords are hashed with bcrypt; logins use an
+  HttpOnly cookie. Set `SECRET_KEY` in the environment, otherwise a random key is created in
+  `backend/data/secret_key`. Set `COOKIE_SECURE=1` when the site is served over https.
+
 ## Video requirements
 
 - `.mp4`, `.mov`, `.webm` or `.mkv`, between 1 and 60 seconds

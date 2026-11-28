@@ -10,6 +10,10 @@ fastapi
 uvicorn[standard]
 python-multipart
 
+# accounts and PDF reports
+bcrypt
+fpdf2
+
 # models: YOLO26-pose, KTPFormer, LSTM/GRU encoders
 torch
 ultralytics

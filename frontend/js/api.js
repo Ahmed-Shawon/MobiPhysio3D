@@ -1,5 +1,6 @@
 /* All communication with the FastAPI backend happens in this file.
-   Public function:  API.analyze(exerciseId, file, onStage) → Promise<{ score, skeletonSrc, details }>
+   Public function:  API.analyze(exerciseId, file, onStage)
+                     → Promise<{ score, skeletonSrc, details, jobId, assessmentId }>
    onStage(stage, percent) is called with "upload" | "processing" | "scoring"            */
 (function () {
   const cfg = window.APP_CONFIG;
@@ -22,7 +23,9 @@
     return {
       score: json[R.score],
       skeletonSrc: resolveSkeleton(json),
-      details: json[R.details] && typeof json[R.details] === "object" ? json[R.details] : {}
+      details: json[R.details] && typeof json[R.details] === "object" ? json[R.details] : {},
+      jobId: json.job_id || null,                 // used for the PDF report link
+      assessmentId: json.assessment_id || null    // set when the result was saved to the account
     };
   }
 
@@ -45,6 +48,7 @@
 
       const xhr = new XMLHttpRequest();
       xhr.open("POST", apiUrl(cfg.ENDPOINTS.analyze));
+      xhr.withCredentials = true;   // sends the login cookie, so the result is saved to the account
       Object.entries(cfg.EXTRA_HEADERS || {}).forEach(([k, v]) => xhr.setRequestHeader(k, v));
       xhr.timeout = cfg.REQUEST_TIMEOUT_MS;
       xhr.upload.onprogress = (e) => { if (e.lengthComputable) onStage("upload", Math.round((e.loaded / e.total) * 100)); };
@@ -67,7 +71,7 @@
     while (Date.now() < deadline) {
       await sleep(cfg.POLL_INTERVAL_MS);
       let res;
-      try { res = await fetch(url, { headers: cfg.EXTRA_HEADERS || {} }); } catch (_) { throw unreachable(); }
+      try { res = await fetch(url, { headers: cfg.EXTRA_HEADERS || {}, credentials: "include" }); } catch (_) { throw unreachable(); }
       const body = await res.json().catch(() => null);
       if (!res.ok || !body) throw new Error(errorMessage(res.status, body));
       const status = String(body[R.status] || "").toLowerCase();
@@ -86,6 +90,7 @@
   }
 
   window.API = {
+    url: apiUrl,
     async analyze(exerciseId, file, onStage) {
       onStage = onStage || function () {};
       if (cfg.USE_MOCK) return normalize(await mockAnalyze(onStage));

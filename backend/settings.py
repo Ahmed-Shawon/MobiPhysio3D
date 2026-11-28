@@ -48,6 +48,10 @@ UPLOAD_DIR = BACKEND_DIR / "uploads"
 OUTPUT_DIR = BACKEND_DIR / "outputs"
 CACHE_DIR = BACKEND_DIR / "models_cache"
 LOG_DIR = BACKEND_DIR / "logs"
+# Accounts database, saved assessments (GIF + key frames) and the secret key. Never committed.
+DATA_DIR = Path(_env("DATA_DIR", BACKEND_DIR / "data")).resolve()
+DB_PATH = DATA_DIR / "mobiphysio.db"
+SAVED_DIR = DATA_DIR / "assessments"
 
 # ---------------------------------------------------------------- runtime
 # "auto" = GPU if available, else CPU.  "cpu" or "cuda" to force.
@@ -80,6 +84,16 @@ GIF_FPS = int(_env("GIF_FPS", 25))
 # CPU processes that draw the skeleton GIF at the same time. 0 = automatic (cores - 1, at most 6)
 GIF_WORKERS = int(_env("GIF_WORKERS", 0))
 
+# ---------------------------------------------------------------- accounts
+# Signs the login cookies. Set SECRET_KEY in the environment; if it is not set, a random
+# key is created once and kept in data/secret_key (so logins survive a restart).
+SECRET_KEY = _env("SECRET_KEY", "")
+SESSION_DAYS = float(_env("SESSION_DAYS", 30))
+SESSION_COOKIE = "mp_session"
+# "1" when the site is served over https (the cookie is then only sent over https)
+COOKIE_SECURE = _env("COOKIE_SECURE", "0") == "1"
+KEYFRAMES = 3           # input / skeleton frame pairs in the PDF report
+
 # ---------------------------------------------------------------- startup check
 SEED = 42
 CHECK_DECIMALS = 4      # decimals shown in logs/startup_check.log
@@ -89,5 +103,12 @@ CHECK_TOLERANCE_POINTS = float(_env("CHECK_TOLERANCE_POINTS", 0.1))   # MAE and 
 CHECK_TOLERANCE_CORR = float(_env("CHECK_TOLERANCE_CORR", 0.01))      # Pearson and CCC
 STRICT_CHECK = _env("STRICT_CHECK", "1") != "0"   # "0" = start even if a model is outside the tolerance
 
-for d in (UPLOAD_DIR, OUTPUT_DIR, CACHE_DIR, LOG_DIR):
+for d in (UPLOAD_DIR, OUTPUT_DIR, CACHE_DIR, LOG_DIR, DATA_DIR, SAVED_DIR):
     d.mkdir(parents=True, exist_ok=True)
+
+if not SECRET_KEY:
+    _key_file = DATA_DIR / "secret_key"
+    if not _key_file.is_file():
+        import secrets as _secrets
+        _key_file.write_text(_secrets.token_hex(32), encoding="utf-8")
+    SECRET_KEY = _key_file.read_text(encoding="utf-8").strip()
