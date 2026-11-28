@@ -98,7 +98,7 @@ features and checked against the reported test metrics. The terminal shows
 ## Accounts and reports
 
 - **Guests** can run assessments without an account. Each result can be downloaded as a
-  **PDF report** (exercise, date, score and what it means, the model used, and key frames of
+  **PDF report** (exercise, date, score out of 100, the model used, and key frames of
   the video next to the skeleton) and as the **skeleton GIF**.
 - **Sign up / log in** (name, email, password) from the navbar. Logged-in users' assessments
   are saved automatically; a guest result can be saved right after signing up.

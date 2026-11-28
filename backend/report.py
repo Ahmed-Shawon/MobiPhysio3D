@@ -1,4 +1,4 @@
-"""PDF assessment report (fpdf2). One A4 page: exercise, date, score and what it means,
+"""PDF assessment report (fpdf2). One A4 page: exercise, date, score out of 100,
 the model used, the details table and key frames of the video next to the skeleton."""
 import time
 from datetime import datetime
@@ -13,21 +13,6 @@ MUTED = (102, 112, 133)
 TEAL = (15, 118, 110)
 LINE = (228, 231, 236)
 NIGHT = (14, 12, 43)
-
-# What a score means. A rough guide shown next to the number.
-BANDS = [
-    (80, "Good", "The movement is close to the reference performance for this exercise."),
-    (50, "Fair", "The movement is partly correct. Some parts of it differ from the reference performance."),
-    (0, "Needs work", "The movement differs clearly from the reference performance for this exercise."),
-]
-
-
-def score_meaning(score):
-    for low, label, text in BANDS:
-        if score >= low:
-            return label, text
-    return BANDS[-1][1], BANDS[-1][2]
-
 
 def model_combo(ex):
     return f"{ex.encoder} + {ex.regressor}, {ex.modality.upper()}"
@@ -53,7 +38,6 @@ def build(exercise_id, score, details, created=None, video_name=None, keyframes=
     """Returns the PDF as bytes."""
     ex = EXERCISES[exercise_id]
     created = created or time.time()
-    label, meaning = score_meaning(score)
     mae = ex.reference["MAE"]
 
     pdf = _PDF(format="A4")
@@ -95,23 +79,23 @@ def build(exercise_id, score, details, created=None, video_name=None, keyframes=
     pdf.set_xy(16, y + 11)
     pdf.set_font("Helvetica", "B", 30)
     pdf.set_text_color(*TEAL)
-    pdf.cell(box_w, 14, f"{score:.2f}", align="C")
+    pdf.cell(box_w, 14, f"{score:.2f}", align="C")  # shown with "/ 100" below
     pdf.set_xy(16, y + 27)
     pdf.set_font("Helvetica", "", 9)
     pdf.set_text_color(*BODY)
-    pdf.cell(box_w, 5, "out of 100", align="C")
+    pdf.cell(box_w, 5, "/ 100", align="C")
 
     x2 = 16 + box_w + 8
     pdf.set_xy(x2, y + 2)
     pdf.set_font("Helvetica", "B", 13)
     pdf.set_text_color(*INK)
-    pdf.cell(0, 7, _t(f"What it means: {label}"), new_x="LEFT", new_y="NEXT")
+    pdf.cell(0, 7, "About this score", new_x="LEFT", new_y="NEXT")
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(*BODY)
     pdf.multi_cell(w - box_w - 8, 5, _t(
-        f"{meaning} The score runs from 0 to 100; higher is better. On the test videos the model "
+        f"The score runs from 0 to 100; higher is better. On the test videos the model "
         f"for this exercise was off by about {mae:.1f} points on average, so treat small changes "
-        f"between sessions with care. Rough guide: 80-100 good, 50-79 fair, below 50 needs work."),
+        f"between sessions with care."),
         align="L", new_x="LEFT", new_y="NEXT")
     pdf.set_y(max(pdf.get_y(), y + 40) + 8)
 
