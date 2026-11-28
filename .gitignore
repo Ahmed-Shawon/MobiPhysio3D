@@ -32,3 +32,6 @@ MobiPhysio_9_exercise_videos/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# ---- Report screenshots (kept local)
+report_images/

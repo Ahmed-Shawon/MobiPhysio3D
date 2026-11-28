@@ -83,11 +83,11 @@ window.APP_CONFIG = {
     { id: "E01", name: "Abduction", area: "Shoulder", pose: "3D", description: "Moving the limb away from the midline of the body.", demo: "assets/demos/E01_Abduction.mp4", tips: [] },
     { id: "E02", name: "Adduction", area: "Shoulder", pose: "3D", description: "Moving the limb back toward the midline of the body.", demo: "assets/demos/E02_Adduction.mp4", tips: [] },
     { id: "E03", name: "Lateral Rotation", area: "Shoulder", pose: "3D", description: "Rotating the limb outward, away from the midline.", demo: "assets/demos/E03_LateralRotation.mp4", tips: [] },
-    { id: "E04", name: "Medial Rotation", area: "Shoulder", pose: "3D", description: "Rotating the limb inward, toward the midline.", demo: "assets/demos/E03_LateralRotation.mp4", tips: [] },
+    { id: "E04", name: "Medial Rotation", area: "Shoulder", pose: "3D", description: "Rotating the limb inward, toward the midline.", demo: "assets/demos/E04_MedialRotation.mp4", tips: [] },
     { id: "E05", name: "Circumduction", area: "Shoulder", pose: "3D", description: "Moving the limb in a circular, cone-shaped path.", demo: "assets/demos/E05_Circumduction.mp4", tips: [] },
     { id: "E06", name: "Wrist Extension", area: "Wrist", pose: "2D", description: "Bending the wrist backward so the back of the hand moves toward the forearm.", demo: "assets/demos/E06_WristExtension.mp4", tips: [] },
     { id: "E07", name: "Hip Joint Flexion", area: "Hip", pose: "3D", description: "Raising the thigh forward toward the torso.", demo: "assets/demos/E07_HipJointFlexion.mp4", tips: [] },
-    { id: "E08", name: "Lumbar Flexion", area: "Spine", pose: "3D", description: "Bending the lower back forward.", demo: "assets/demos/E07_HipJointFlexion.mp4", tips: [] },
+    { id: "E08", name: "Lumbar Flexion", area: "Spine", pose: "3D", description: "Bending the lower back forward.", demo: "assets/demos/E08_LumberFlexion.mp4", tips: [] },
     { id: "E09", name: "Back Extension", area: "Spine", pose: "3D", description: "Arching the back backward from an upright position.", demo: "assets/demos/E09_BackExtension.mp4", tips: [] }
   ],
   // Tips shown for every exercise, before the exercise's own tips
